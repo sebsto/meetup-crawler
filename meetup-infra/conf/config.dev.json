@@ -1,0 +1,21 @@
+{
+    "description": "Configuration file used for the dev and prod environments. Create a copy named config.dev.json and config.prod.json",
+    "environmentType": "dev",
+    "env": {
+        "XXXaccount": "486652066693",
+        "region": "eu-west-3"
+    },
+    "vpc": {
+        "name": "meetup crawler vpc",
+        "maxAzs": 3,
+        "natGateways": 0
+    },
+    "rds": {
+        "name": "meetup crawler database",
+        "masterUsername": "dbuser",
+        "databaseName": "meetupcrawler"
+    }, 
+    "secretManager": {
+        "XXXengine": "postgres"
+    }
+}

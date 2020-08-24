@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  meetup-crawler
+
+  Crawls Meetup.com API to retrieve groups data and event details
+
+Globals:
+  Function:
+    Runtime: python3.8
+    Timeout: 180
+    Environment:
+      Variables:
+        PYTHON_LOGLEVEL: "DEBUG"
+        DB_SECRET_NAME: "meetupcrawlerdatabaseSecret-pDbdefjrmmIg"
+        AWS_REGION: "eu-west-3"
+
+Resources:
+  MeetupCrawlerFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/
+      Handler: meetupcrawler.app.lambda_handler
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MeetupCodeSqsQueue.Arn
+            BatchSize: 10
+
+  # MeetupMembersFunction:
+  #   Type: AWS::Serverless::Function 
+  #   Properties:
+  #     CodeUri: meetupcrawler/
+  #     Handler: meetup.members
+          
+  MeetupCodeSqsQueue:
+    Type: AWS::SQS::Queue

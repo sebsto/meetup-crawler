@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "meetup-crawler"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1vie0g6hp4wlu"
+s3_prefix = "meetup-crawler"
+region = "eu-west-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+

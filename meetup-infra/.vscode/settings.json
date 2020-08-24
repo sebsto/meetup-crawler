@@ -1,0 +1,17 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/*.pyc": true,
+        "**/__pycache__": true
+    },
+    "python.venvPath": "/Users/stormacq/.local/share/virtualenvs",
+    "python.pythonPath": "/Users/stormacq/.local/share/virtualenvs/meetup-infra-WjH0Ge4g/bin/python3",
+    "python.testing.pytestArgs": [
+        "-s"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "terminal.integrated.env.osx": { "PYTHONPATH" : "/Users/stormacq/Documents/amazon/code/meetup/meetup-reporting/meetup-infra/src" }
+}
