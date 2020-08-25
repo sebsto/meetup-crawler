@@ -11,6 +11,7 @@ pytest-mock = "*"
 [packages]
 requests = "*"
 boto3 = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.8"
