@@ -32,6 +32,7 @@ def lambda_handler(event, context):
         region_name=os.environ['AWS_REGION'],
         secret_name=os.environ['DB_SECRET_NAME']
     )
+    logger.debug(f"Retrieved secret for database: {db_config['dbname'] } and user { db_config['user'] }")
 
     meetup_client = MeetupClient()
 
@@ -46,6 +47,8 @@ def lambda_handler(event, context):
             logger.debug(sql)
             
             db.executeStatement(db_config, sql)
+            logger.debug('Done')
+            
     return
 
 if __name__ == "__main__":

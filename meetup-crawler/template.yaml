@@ -1,5 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+
+# TODO should use parameters for SubnetIds, SecurityGroup, Secret 
+
 Description: >
   meetup-crawler
 
@@ -8,19 +11,23 @@ Description: >
 Globals:
   Function:
     Runtime: python3.8
-    Timeout: 180
+    Timeout: 30
     Environment:
       Variables:
         PYTHON_LOGLEVEL: "DEBUG"
         DB_SECRET_NAME: "meetupcrawlerdatabaseSecret-pDbdefjrmmIg"
-        AWS_REGION: "eu-west-3"
-
+              
 Resources:
   MeetupCrawlerFunction:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: src/
       Handler: meetupcrawler.app.lambda_handler
+     
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-pDbdefjrmmIg-pZoE4D"
+     
       Events:
         MySQSEvent:
           Type: SQS
@@ -28,6 +35,15 @@ Resources:
             Queue: !GetAtt MeetupCodeSqsQueue.Arn
             BatchSize: 10
 
+      VpcConfig:
+        SubnetIds: 
+          # private subnet from the RDS VPC (with NAT Gateway because we need to call AWS and external APIs)
+          # https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the
+          - "subnet-07985f2e998434d96"
+          - "subnet-0e3e9b20ad801a4e1"
+        SecurityGroupIds:
+          - "sg-0b344dad4fcb09729" # security group authorized to make inbound connections to RDS cluster 
+        
   # MeetupMembersFunction:
   #   Type: AWS::Serverless::Function 
   #   Properties:

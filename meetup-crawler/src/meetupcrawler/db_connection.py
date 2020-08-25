@@ -6,16 +6,28 @@ import os
 import time
 import json
 import base64
+import logging
 
 import boto3
 from botocore.exceptions import ClientError
 
 import psycopg2
 
+# Initialize logging with level provided as environment variable
+LOGLEVEL = os.environ.get('PYTHON_LOGLEVEL', 'WARNING').upper()
+NUMERIC_LOGLEVEL = getattr(logging, LOGLEVEL, None)
+if not isinstance(NUMERIC_LOGLEVEL, int):
+    raise Exception(f'Invalid log level: {NUMERIC_LOGLEVEL}')
+
+logging.basicConfig()
+logger = logging.getLogger(name="DBConnection")
+logger.setLevel(NUMERIC_LOGLEVEL)
+
 def executeStatement(secret, sql):
     con = None 
     
     try:
+        logger.debug(f"Connecting to DB {secret['dbname']}")
         con = psycopg2.connect(**secret)
         cur = con.cursor()
 
@@ -23,8 +35,11 @@ def executeStatement(secret, sql):
         
         cur.close()
         con.commit()
+        logger.debug(f"commit")
+
     except psycopg2.DatabaseError as e:
-        print(e)
+        logger.error(f"Can not execute { sql } statement")
+        logger.error(e)
     finally:
         if con is not None:
             con.close()  
@@ -71,6 +86,7 @@ def get_secret(region_name: str, secret_name: str):
     # We rethrow the exception by default.
 
     try:
+        logger.debug(f"Going to retrieve secret { secret_name } in region { region_name }")
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
         )
@@ -106,10 +122,14 @@ def get_secret(region_name: str, secret_name: str):
             return decoded_binary_secret
             
 def pgDSN(region_name: str, secret_name: str):
-    secret = get_secret(region_name, secret_name)
-    secret['user'] = secret['username']
-    del secret['username']
-    del secret['engine']
+    try:
+        secret = get_secret(region_name, secret_name)
+        secret['user'] = secret['username']
+        del secret['username']
+        del secret['engine']
+    except Exception as e:
+        logger.error(f"Can not retrieve secret : { secret_name }")
+        logger.error(e)
     return secret 
     
 if __name__ == "__main__":
