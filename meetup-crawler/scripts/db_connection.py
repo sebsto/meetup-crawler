@@ -69,5 +69,5 @@ def pgDSN(region_name: str, secret_name: str):
     return secret 
         
 if __name__ == "__main__":
-    secret = get_secret(region_name="eu-west-3", secret_name="meetupcrawlerdatabaseSecret-pDbdefjrmmIg")
+    secret = get_secret(region_name="eu-west-3", secret_name="meetupcrawlerdatabaseSecret-IotH2oBYYAAG")
     print(secret)

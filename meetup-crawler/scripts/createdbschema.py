@@ -52,7 +52,7 @@ def createInsertStmt():
         return sql
         
 if __name__ == "__main__":
-    secret = db_connection.pgDSN(region_name="eu-west-3", secret_name="meetupcrawlerdatabaseSecret-pDbdefjrmmIg")
+    secret = db_connection.pgDSN(region_name="eu-west-3", secret_name="meetupcrawlerdatabaseSecret-IotH2oBYYAAG")
 
     con = None 
     

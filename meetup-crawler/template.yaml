@@ -26,7 +26,7 @@ Resources:
      
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
-            SecretArn: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-pDbdefjrmmIg-pZoE4D"
+            SecretArn: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-IotH2oBYYAAG-3CbT5p"
      
       Events:
         MySQSEvent:
@@ -39,10 +39,10 @@ Resources:
         SubnetIds: 
           # private subnet from the RDS VPC (with NAT Gateway because we need to call AWS and external APIs)
           # https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the
-          - "subnet-07985f2e998434d96"
-          - "subnet-0e3e9b20ad801a4e1"
+          - "subnet-0eec570f870efe6c3"
+          - "subnet-04f464473c5ac812c"
         SecurityGroupIds:
-          - "sg-0b344dad4fcb09729" # security group authorized to make inbound connections to RDS cluster 
+          - "sg-0655a345b3b79c539" # security group authorized to make inbound connections to RDS cluster 
         
   # MeetupMembersFunction:
   #   Type: AWS::Serverless::Function 
