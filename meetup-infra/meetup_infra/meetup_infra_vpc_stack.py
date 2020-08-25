@@ -13,7 +13,24 @@ class MeetupInfraVpcStack(core.Stack):
         self.vpc = ec2.Vpc(self, config['vpc']['name'],
             cidr="10.0.0.0/16",
             max_azs=config['vpc']['maxAzs'],
-            nat_gateways=config['vpc']['natGateways']
+            nat_gateways=config['vpc']['natGateways'],
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    cidr_mask=24,
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    name="public"
+                ),
+                ec2.SubnetConfiguration(
+                    cidr_mask=24,
+                    subnet_type=ec2.SubnetType.PRIVATE,
+                    name="lambda"
+                ),
+                ec2.SubnetConfiguration(
+                    cidr_mask=24,
+                    subnet_type=ec2.SubnetType.ISOLATED,
+                    name="rds"
+                )
+            ]
         )
 
     def get_vpc(self):

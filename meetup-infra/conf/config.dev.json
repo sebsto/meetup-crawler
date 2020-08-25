@@ -8,7 +8,7 @@
     "vpc": {
         "name": "meetup crawler vpc",
         "maxAzs": 3,
-        "natGateways": 0
+        "natGateways": 1
     },
     "rds": {
         "name": "meetup crawler database",
