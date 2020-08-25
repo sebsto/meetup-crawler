@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "meetup-crawler"
+		},
+		{
+			"path": "meetup-infra"
+		}
+	],
+    "terminal.integrated.env.osx": { "PYTHONPATH" : "${workspaceFolder}/meetup-crawler/src" }
+}
