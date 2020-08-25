@@ -1,76 +1,78 @@
-[
-    [{
-        "id": 9011772,
-        "name": "Paris AWS User Group",
-        "status": "active",
-        "link": "https://www.meetup.com/French-AWS-UG/",
-        "urlname": "French-AWS-UG",
-        "description": "\u003cp\u003eAvec la croissance mondiale rapide d'AWS parmi les d\u00e9veloppeurs individuels, les start-up et les entreprises, les d\u00e9veloppeurs demandent de faire partie de groupes d'utilisateurs AWS. Les groupes d'utilisateurs permettent aux clients actuels ou d\u00e9couvrant AWS de rejoindre une communaut\u00e9 croissante et dynamique au sein de laquelle ils peuvent communiquer avec d'autres d\u00e9veloppeurs pour r\u00e9pondre \u00e0 des questions, partager des id\u00e9es et tout savoir sur les nouveaux services et les bonnes pratiques. \u003cbr\u003e\u003c/p\u003e",
-        "created": 1371726579000,
-        "city": "Paris",
-        "untranslated_city": "Paris",
-        "country": "FR",
-        "localized_country_name": "France",
-        "localized_location": "Paris, France",
-        "region2": "",
-        "state": "",
-        "join_mode": "open",
-        "visibility": "public",
-        "lat": 48.86,
-        "lon": 2.34,
-        "members": 3239,
-        "member_pay_fee": false,
-        "organizer": {
-            "id": 13295209,
-            "name": "K'DUAL E.",
-            "bio": "CTO and Modern Utopist",
-            "photo": {
-                "id": 250393164,
-                "highres_link": "https://secure.meetupstatic.com/photos/member/3/3/6/c/highres_250393164.jpeg",
-                "photo_link": "https://secure.meetupstatic.com/photos/member/3/3/6/c/member_250393164.jpeg",
-                "thumb_link": "https://secure.meetupstatic.com/photos/member/3/3/6/c/thumb_250393164.jpeg",
-                "type": "member",
-                "base_url": "https://secure.meetupstatic.com"
-            }
-        },
-        "who": "AWS Users",
-        "group_photo": {
-            "id": 479681601,
-            "highres_link": "https://secure.meetupstatic.com/photos/event/a/2/8/1/highres_479681601.jpeg",
-            "photo_link": "https://secure.meetupstatic.com/photos/event/a/2/8/1/600_479681601.jpeg",
-            "thumb_link": "https://secure.meetupstatic.com/photos/event/a/2/8/1/thumb_479681601.jpeg",
-            "type": "event",
-            "base_url": "https://secure.meetupstatic.com"
-        },
-        "key_photo": {
-            "id": 486051783,
-            "highres_link": "https://secure.meetupstatic.com/photos/event/c/a/4/7/highres_486051783.jpeg",
-            "photo_link": "https://secure.meetupstatic.com/photos/event/c/a/4/7/600_486051783.jpeg",
-            "thumb_link": "https://secure.meetupstatic.com/photos/event/c/a/4/7/thumb_486051783.jpeg",
-            "type": "event",
-            "base_url": "https://secure.meetupstatic.com"
-        },
-        "timezone": "Europe/Paris",
-        "category": {
-            "id": 34,
-            "name": "Tech",
-            "shortname": "tech",
-            "sort_name": "Tech"
-        },
-        "meta_category": {
-            "id": 292,
-            "shortname": "tech",
-            "name": "Tech",
-            "sort_name": "Tech",
-            "photo": {
-                "id": 450131949,
-                "highres_link": "https://secure.meetupstatic.com/photos/event/2/e/a/d/highres_450131949.jpeg",
-                "photo_link": "https://secure.meetupstatic.com/photos/event/2/e/a/d/600_450131949.jpeg",
-                "thumb_link": "https://secure.meetupstatic.com/photos/event/2/e/a/d/thumb_450131949.jpeg",
+    [
+        {
+            "id": 9011772,
+            "name": "Paris AWS User Group",
+            "status": "active",
+            "link": "https://www.meetup.com/French-AWS-UG/",
+            "urlname": "French-AWS-UG",
+            "description": "\u003cp\u003eAvec la croissance mondiale rapide d'AWS parmi les d\u00e9veloppeurs individuels, les start-up et les entreprises, les d\u00e9veloppeurs demandent de faire partie de groupes d'utilisateurs AWS. Les groupes d'utilisateurs permettent aux clients actuels ou d\u00e9couvrant AWS de rejoindre une communaut\u00e9 croissante et dynamique au sein de laquelle ils peuvent communiquer avec d'autres d\u00e9veloppeurs pour r\u00e9pondre \u00e0 des questions, partager des id\u00e9es et tout savoir sur les nouveaux services et les bonnes pratiques. \u003cbr\u003e\u003c/p\u003e",
+            "created": 1371726579000,
+            "city": "Paris",
+            "untranslated_city": "Paris",
+            "country": "FR",
+            "localized_country_name": "France",
+            "localized_location": "Paris, France",
+            "region2": "",
+            "state": "",
+            "join_mode": "open",
+            "visibility": "public",
+            "lat": 48.86,
+            "lon": 2.34,
+            "members": 3239,
+            "member_pay_fee": false,
+            "organizer": {
+                "id": 13295209,
+                "name": "K'DUAL E.",
+                "bio": "CTO and Modern Utopist",
+                "photo": {
+                    "id": 250393164,
+                    "highres_link": "https://secure.meetupstatic.com/photos/member/3/3/6/c/highres_250393164.jpeg",
+                    "photo_link": "https://secure.meetupstatic.com/photos/member/3/3/6/c/member_250393164.jpeg",
+                    "thumb_link": "https://secure.meetupstatic.com/photos/member/3/3/6/c/thumb_250393164.jpeg",
+                    "type": "member",
+                    "base_url": "https://secure.meetupstatic.com"
+                }
+            },
+            "who": "AWS Users",
+            "group_photo": {
+                "id": 479681601,
+                "highres_link": "https://secure.meetupstatic.com/photos/event/a/2/8/1/highres_479681601.jpeg",
+                "photo_link": "https://secure.meetupstatic.com/photos/event/a/2/8/1/600_479681601.jpeg",
+                "thumb_link": "https://secure.meetupstatic.com/photos/event/a/2/8/1/thumb_479681601.jpeg",
                 "type": "event",
                 "base_url": "https://secure.meetupstatic.com"
             },
-            "category_ids": [34]
+            "key_photo": {
+                "id": 486051783,
+                "highres_link": "https://secure.meetupstatic.com/photos/event/c/a/4/7/highres_486051783.jpeg",
+                "photo_link": "https://secure.meetupstatic.com/photos/event/c/a/4/7/600_486051783.jpeg",
+                "thumb_link": "https://secure.meetupstatic.com/photos/event/c/a/4/7/thumb_486051783.jpeg",
+                "type": "event",
+                "base_url": "https://secure.meetupstatic.com"
+            },
+            "timezone": "Europe/Paris",
+            "category": {
+                "id": 34,
+                "name": "Tech",
+                "shortname": "tech",
+                "sort_name": "Tech"
+            },
+            "meta_category": {
+                "id": 292,
+                "shortname": "tech",
+                "name": "Tech",
+                "sort_name": "Tech",
+                "photo": {
+                    "id": 450131949,
+                    "highres_link": "https://secure.meetupstatic.com/photos/event/2/e/a/d/highres_450131949.jpeg",
+                    "photo_link": "https://secure.meetupstatic.com/photos/event/2/e/a/d/600_450131949.jpeg",
+                    "thumb_link": "https://secure.meetupstatic.com/photos/event/2/e/a/d/thumb_450131949.jpeg",
+                    "type": "event",
+                    "base_url": "https://secure.meetupstatic.com"
+                },
+                "category_ids": [
+                    34
+                ]
+            }
         }
-    }]
-]
+    ]
