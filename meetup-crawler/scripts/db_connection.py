@@ -3,57 +3,12 @@
 # https://aws.amazon.com/developers/getting-started/python/
 
 import os
-import time
 import json
 import base64
 
 import boto3
 from botocore.exceptions import ClientError
 
-import psycopg2
-
-def executeStatement(secret, sql):
-    con = None 
-    
-    try:
-        con = psycopg2.connect(**secret)
-        cur = con.cursor()
-
-        cur.execute(sql)
-        
-        cur.close()
-        con.commit()
-    except psycopg2.DatabaseError as e:
-        print(e)
-    finally:
-        if con is not None:
-            con.close()  
-            
-def insertGroupStmt(group):
-    
-    table_name = 'meetup_group'
-    fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category']
-    type_association={ 'str' : 'VARCHAR', 'bool' : 'BOOLEAN', 'int' : 'BIGINT', 'float' : 'NUMERIC'}
-        
-    all_fields = [list(group.keys())][0]
-    columns = [x for x in all_fields if x not in fields_to_ignore]
-    values = ''
-    for c in columns:
-        quote = ""
-        value = group[c]
-        if type(value).__name__ == 'str':
-            quote = "'"
-            value = group[c].replace("'", "''")
-        values += f' {quote}{value}{quote}, '
-
-    columns.append( 'last_updated_at , raw_json')
-    json_str = json.dumps(group,ensure_ascii=False).replace("'", "''")
-    values += f' { int(time.time()) }, \' { json_str } \' '
-    #values = values[:-2]
-    
-    sql = f'INSERT INTO {table_name} ( {", ".join(columns) } ) VALUES ( { values } );'    
-    return sql
-        
 def get_secret(region_name: str, secret_name: str):
 
     # secret_name = "meetupcrawlerdatabaseSecret-pDbdefjrmmIg"
@@ -105,13 +60,14 @@ def get_secret(region_name: str, secret_name: str):
             decoded_binary_secret = base64.b64decode(get_secret_value_response['SecretBinary'])
             return decoded_binary_secret
             
+
 def pgDSN(region_name: str, secret_name: str):
     secret = get_secret(region_name, secret_name)
     secret['user'] = secret['username']
     del secret['username']
     del secret['engine']
     return secret 
-    
+        
 if __name__ == "__main__":
     secret = get_secret(region_name="eu-west-3", secret_name="meetupcrawlerdatabaseSecret-pDbdefjrmmIg")
     print(secret)

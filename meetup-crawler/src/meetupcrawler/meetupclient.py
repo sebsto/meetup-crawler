@@ -21,6 +21,5 @@ class MeetupClient(object):
     def members(self, group):
         self.logger.debug(f'meetup.members for group : {group}')
         group_info = self.client.GetGroup({'urlname': group}) # pylint: disable=no-member
-        self.logger.debug(f'{group_info}')
-        return group_info
+        return group_info.initial_data[0]
 

@@ -2,8 +2,8 @@ import os
 import json
 import logging
 
+import meetupcrawler.db_connection as db
 from meetupcrawler.meetupclient import MeetupClient
-from meetupcrawler.db_connection import get_secret
 
 # verify pre-reqs env variables
 if 'AWS_REGION' not in os.environ:
@@ -22,29 +22,34 @@ logging.basicConfig()
 logger = logging.getLogger(name="MeetupCrawlerLambda")
 logger.setLevel(NUMERIC_LOGLEVEL)
 
+
 def lambda_handler(event, context):
     logger.info("Lambda Handler")
     logger.debug(event)
 
-    db_config = get_secret(
+    # TODO this should be moved out o fthe handler to have only one DB connection per container
+    db_config = db.pgDSN(
         region_name=os.environ['AWS_REGION'],
         secret_name=os.environ['DB_SECRET_NAME']
     )
 
-    logger.debug(db_config)
-
     meetup_client = MeetupClient()
 
-    group_infos = []
     for record in event['Records']:
         body = json.loads(record['body'])
-        group_infos.append(meetup_client.members(body['group']).initial_data)
+        for g in body:
+            group_info = meetup_client.members(g['group'])
+            logger.info(f'Handling Group: { group_info["name"] } ({ group_info["urlname"] })')
+            logger.debug(group_info)
 
-    return group_infos
+            sql = db.insertGroupStmt(group_info)
+            logger.debug(sql)
+            
+            db.executeStatement(db_config, sql)
+    return
 
 if __name__ == "__main__":
     logger.info("main")
     with open('./events/event.json') as json_file:
         payload = json.load(json_file)
-        ret = lambda_handler(payload, {})
-        logger.debug(ret)
+        lambda_handler(payload, {})
