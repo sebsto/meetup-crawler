@@ -2,7 +2,7 @@ import os
 import json
 import logging
 
-import meetupcrawler.db_connection as db
+from meetupcrawler.db_connection import DatabaseClient
 from meetupcrawler.meetupclient import MeetupClient
 
 # verify pre-reqs env variables
@@ -27,27 +27,30 @@ def lambda_handler(event, context):
     logger.info("Lambda Handler")
     logger.debug(event)
 
-    # TODO this should be moved out o fthe handler to have only one DB connection per container
-    db_config = db.pgDSN(
+    db = DatabaseClient(
         region_name=os.environ['AWS_REGION'],
         secret_name=os.environ['DB_SECRET_NAME']
     )
-    logger.debug(f"Retrieved secret for database: {db_config['dbname'] } and user { db_config['user'] }")
 
     meetup_client = MeetupClient()
 
     for record in event['Records']:
         body = json.loads(record['body'])
         for g in body:
-            group_info = meetup_client.members(g['group'])
+            
+            # First, get details about the group
+            group_info = meetup_client.group(g['group'])
             logger.info(f'Handling Group: { group_info["name"] } ({ group_info["urlname"] })')
             logger.debug(group_info)
 
             sql = db.insertGroupStmt(group_info)
             logger.debug(sql)
             
-            db.executeStatement(db_config, sql)
+            db.executeStatement(sql)
             logger.debug('Done')
+            
+            # Second get details about their events
+            
             
     return
 
