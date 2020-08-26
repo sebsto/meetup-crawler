@@ -15,7 +15,7 @@ Globals:
     Environment:
       Variables:
         PYTHON_LOGLEVEL: "DEBUG"
-        DB_SECRET_NAME: "meetupcrawlerdatabaseSecret-pDbdefjrmmIg"
+        DB_SECRET_NAME: "meetupcrawlerdatabaseSecret-IotH2oBYYAAG"
               
 Resources:
   MeetupCrawlerFunction:
