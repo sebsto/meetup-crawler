@@ -77,7 +77,55 @@ class DatabaseClient(object):
         
         sql = f'INSERT INTO {table_name} ( {", ".join(columns) } ) VALUES ( { values } );'    
         return sql
-            
+        
+    def insertEventsStmt(self, event):
+
+        event_table_name = 'meetup_event'
+        event_fields_to_ignore = [ 'group', 'venue', 'rating', 'status']
+        event_fields_to_flatten = [ 'venue', 'rating', 'group' ]
+        
+        type_association={ 'str' : 'VARCHAR', 'bool' : 'BOOLEAN', 'int' : 'BIGINT', 'float' : 'NUMERIC'}
+
+        all_fields = [list(event.keys())][0]
+        columns = [x for x in all_fields if x not in event_fields_to_ignore]
+
+        # add columns for structures to flatten, prefixed by the entry name
+        for f in event_fields_to_flatten:
+            if f in event:
+                additional_columns = [ f + '_' + c for c in [list(event[f].keys())][0] ]
+                columns += additional_columns
+
+        values = ''
+        for c in columns:
+            quote = ""
+            if c in event:
+                # top level field
+                value = event[c]
+            else:
+                # flattened field 
+                fields = c.split('_', 1)
+                if fields[0] in event and fields[1] in event[fields[0]]:
+                    value = event[ fields[0] ][ fields[1] ]
+                else:
+                    value = 'NULL'
+                
+            # insert quotes before and after String    
+            if type(value).__name__ == 'str':
+                quote = "'"
+                value = value.replace("'", "''")
+                
+            values += f' {quote}{value}{quote}, '
+
+        columns.append( 'last_updated_at , raw_json')
+        json_str = json.dumps(event,ensure_ascii=False).replace("'", "''")
+        values += f' { int(time.time()) }, \' { json_str } \' '
+        #values = values[:-2]
+        
+        sql = f'INSERT INTO {event_table_name} ( {", ".join(columns) } ) VALUES ( { values } );'   
+
+        return sql
+
+
     def __get_secret(self):
     
         # secret_name = "meetupcrawlerdatabaseSecret-pDbdefjrmmIg"

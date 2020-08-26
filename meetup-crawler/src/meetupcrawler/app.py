@@ -2,7 +2,7 @@ import os
 import json
 import logging
 
-from meetupcrawler.db_connection import DatabaseClient
+from meetupcrawler.dbclient import DatabaseClient
 from meetupcrawler.meetupclient import MeetupClient
 
 # verify pre-reqs env variables
@@ -32,27 +32,35 @@ def lambda_handler(event, context):
         secret_name=os.environ['DB_SECRET_NAME']
     )
 
-    meetup_client = MeetupClient()
+    meetup = MeetupClient()
 
     for record in event['Records']:
         body = json.loads(record['body'])
         for g in body:
             
             # First, get details about the group
-            group_info = meetup_client.group(g['group'])
-            logger.info(f'Handling Group: { group_info["name"] } ({ group_info["urlname"] })')
-            logger.debug(group_info)
+            group_info = meetup.group(g['group'])
+            logger.info(f'Handling group: { group_info["name"] } ({ group_info["urlname"] })')
+            #logger.debug(group_info)
 
             sql = db.insertGroupStmt(group_info)
-            logger.debug(sql)
+            #logger.debug(sql)
             
             db.executeStatement(sql)
-            logger.debug('Done')
+            logger.debug('Group data updated')
             
             # Second get details about their events
+            events = meetup.events(group_info, g['start'])
+            #logger.debug(events)
             
-            
+            for e in events:
+                logger.info(f"Handling event: { e['name'] }")
+                sql = db.insertEventsStmt(e)
+                #logger.debug(sql)
+                db.executeStatement(sql)
+                logger.debug('Event data updated')
     return
+            
 
 if __name__ == "__main__":
     logger.info("main")
