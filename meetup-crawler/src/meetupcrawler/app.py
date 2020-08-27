@@ -97,6 +97,7 @@ def lambda_handler(event, context):
                     
                     for e in events:
                         logger.info(f"Handling event: { e['name'] }")
+                        logger.debug(e)
                         sql = db.insertEventsStmt(e)
                         #logger.debug(sql)
                         db.executeStatement(sql)
@@ -113,8 +114,7 @@ def lambda_handler(event, context):
                     update_item(table, item)
                     
                     e = sys.exc_info()[0]
-                    logger.error(f"Can not process message : { event }")
-                    logger.error(e)
+                    logger.exception(f"Can not process message : { event }")
                     raise e   
     
         

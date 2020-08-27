@@ -47,8 +47,7 @@ class DatabaseClient(object):
             self.logger.debug(f"commit")
     
         except psycopg2.DatabaseError as e:
-            self.logger.error(f"Can not execute { sql } statement")
-            self.logger.error(e)
+            self.logger.exception(f"Can not execute { sql } statement")
             raise e
         finally:
             if con is not None:
@@ -57,7 +56,7 @@ class DatabaseClient(object):
     def insertGroupStmt(self, group):
         
         table_name = 'meetup_group'
-        fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category']
+        fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category', 'next_event']
         type_association={ 'str' : 'VARCHAR', 'bool' : 'BOOLEAN', 'int' : 'BIGINT', 'float' : 'NUMERIC'}
 
         # get the list of columns             
@@ -88,8 +87,8 @@ class DatabaseClient(object):
     def insertEventsStmt(self, event):
 
         event_table_name = 'meetup_event'
-        event_fields_to_ignore = [ 'group', 'venue', 'rating', 'status']
-        event_fields_to_flatten = [ 'venue', 'rating', 'group' ]
+        event_fields_to_ignore = [  'venue', 'rating', 'group', 'fee', 'status']
+        event_fields_to_flatten = [ 'venue', 'rating', 'group', 'fee' ]
         
         type_association={ 'str' : 'VARCHAR', 'bool' : 'BOOLEAN', 'int' : 'BIGINT', 'float' : 'NUMERIC'}
 
@@ -195,8 +194,7 @@ class DatabaseClient(object):
             del secret['engine']
             self.logger.debug(f"Got connection details for { secret['dbname'] } and user { secret['user'] }")
         except (ClientError, Exception) as e:
-            self.logger.error(f"Can not retrieve secret : { self.secret_name }")
-            self.logger.error(e)
+            self.logger.exception(f"Can not retrieve secret : { self.secret_name }")
             raise e
         return secret 
     

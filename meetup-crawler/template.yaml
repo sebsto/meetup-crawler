@@ -42,25 +42,30 @@ Parameters:
 Globals:
   Function:
     Runtime: python3.8
+    CodeUri: src/
     Timeout: 30
+    
     Environment:
       Variables:
         PYTHON_LOGLEVEL: !Ref CodeLogLevel
         DB_SECRET_NAME: !Ref DatabaseSecretName
         DYNAMODB_TABLE_NAME: !Ref MeetupGroupDynamoDBTable
         SQS_QUEUE_NAME: !Ref MeetupCodeSqsQueue
-              
+          
 Resources:
   MeetupCrawlerFunction:
     Type: AWS::Serverless::Function 
     Properties:
-      CodeUri: src/
       Handler: meetupcrawler.app.lambda_handler
      
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
-     
+        - DynamoDBReadPolicy:
+            TableName: !Ref MeetupGroupDynamoDBTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref MeetupGroupDynamoDBTable 
+            
       Events:
         MySQSEvent:
           Type: SQS
@@ -75,17 +80,19 @@ Resources:
  
         # security group authorized to make inbound connections to RDS cluster
         SecurityGroupIds: !Ref SecurityGroupId  
-
-      # Messages that can not be precessed will be delivered here for manual analysis
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt ErrorMsgSqsQueue.Arn
   
   MeetupCrawlerSchedulerFunction:
     Type: AWS::Serverless::Function 
     Properties:
-      CodeUri: src/
       Handler: meetupscheduler.app.lambda_handler
+
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt MeetupCodeSqsQueue.QueueName      
+        - DynamoDBReadPolicy:
+            TableName: !Ref MeetupGroupDynamoDBTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref MeetupGroupDynamoDBTable 
           
   MeetupCodeSqsQueue:
     Type: AWS::SQS::Queue
@@ -94,6 +101,11 @@ Resources:
       # Visibility Timeout = 6 x Lambda function timeout as per doc
       VisibilityTimeout: 180
       
+      # Messages that can not be processed will be delivered here for manual analysis
+      RedrivePolicy: 
+        deadLetterTargetArn: !GetAtt ErrorMsgSqsQueue.Arn
+        maxReceiveCount: 3
+        
   ErrorMsgSqsQueue:
     Type: AWS::SQS::Queue
     

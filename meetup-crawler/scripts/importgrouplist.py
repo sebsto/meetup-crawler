@@ -17,7 +17,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 session = boto3.session.Session()
 dynamodb = session.resource('dynamodb', region_name='eu-west-3')
-table = dynamodb.Table('meetup-crawler-dev-MeetupgroupDynamoDBTable-16RAIWVIHZS3A')
+table = dynamodb.Table('meetup-crawler-dev-MeetupGroupDynamoDBTable-10NSOH0M1W28L')
 
 with open("./scripts/meetup_group_list.txt") as f: 
     lines = f.readlines() 

@@ -3,7 +3,7 @@
         {
             "messageId": "934d53ba-bad1-4922-87e7-edc6903fb6c0",
             "receiptHandle": "AQEBXE70NGVrpeGBrYtY3GA8eT8qU2mLu4C3OWuAPhD5/f/nsrfi9mQE/8havGVRIE0HaRB/3QnPgzYq1nM2pq6chs+rs4hUp1NW+Mxw+8rXcdny5z8fk2TeBGsqYohnFuv3gp5/6NaU7nEiUmiURneoDRyK43NI3Ty/kXZcavCj8BFl734nD84dYtTFgzUgC2SkQYjqXdhjIBLE7Sdt6pG8+GEQ3i6FF2cHfKh3Q+csH0KZA50lBQJMZFu1xSTGdfEwETODsSnMegO9+4e90BmqHhywvrzbQiD6d9QrJbFsmkBZQey87YxRlwyi9RkNCfN6PSCoRJllZ5WTN/yqZhzyq4QNpWfC22Xn5C7pZA6gr75DiMmeVjJgf0Ctubu1HPHwbKOb/24c59zb4TZug8xWLU0gdJp1vedPaqQe3uhh2EpsVNaik0ElMg05ftt6mJ4z",
-            "body": "[{ \"group\" : \"French-AWS-UG\", \"start\" : 1, \"end\" : 0 }]",
+            "body": "[{ \"group\" : \"awsperu\", \"start\" : 1, \"end\" : 0 }]",
             "temp" : 1590515991,
             "attributes": {
                 "ApproximateReceiveCount": "1",
