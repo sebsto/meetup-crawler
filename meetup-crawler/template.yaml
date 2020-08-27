@@ -8,14 +8,45 @@ Description: >
 
   Crawls Meetup.com API to retrieve groups data and event details
 
+Parameters: 
+  AlarmEmail: 
+    Default: "stormacq@amazon.com"
+    Description: "Email address to notify of operational issues"
+    Type: "String"
+    
+  SubnetIds:
+    Default: "subnet-0eec570f870efe6c3, subnet-04f464473c5ac812c"
+    Description: "Private subnets with route to NAT Gateway to deploy the Lambda function"
+    Type: "List<AWS::EC2::Subnet::Id>"
+    
+  SecurityGroupId:
+    Default: "sg-0655a345b3b79c539"
+    Description: "Security Group that has permission to access the database"
+    Type: "List<AWS::EC2::SecurityGroup::Id>"    
+    
+  DatabaseSecretArn:
+    Default: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-IotH2oBYYAAG-3CbT5p"
+    Description: "Arn of the secret having database connection info"
+    Type: "String"      
+    
+  DatabaseSecretName:
+    Default: "meetupcrawlerdatabaseSecret-IotH2oBYYAAG"
+    Description: "Name of the secret having database connection info"
+    Type: "String"  
+    
+  CodeLogLevel:
+    Default: "DEBUG"
+    Description: "Log Level, see https://docs.python.org/3/library/logging.html#levels"
+    Type: "String"    
+      
 Globals:
   Function:
     Runtime: python3.8
     Timeout: 30
     Environment:
       Variables:
-        PYTHON_LOGLEVEL: "DEBUG"
-        DB_SECRET_NAME: "meetupcrawlerdatabaseSecret-IotH2oBYYAAG"
+        PYTHON_LOGLEVEL: !Ref CodeLogLevel
+        DB_SECRET_NAME: !Ref DatabaseSecretName
               
 Resources:
   MeetupCrawlerFunction:
@@ -26,7 +57,7 @@ Resources:
      
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
-            SecretArn: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-IotH2oBYYAAG-3CbT5p"
+            SecretArn: !Ref DatabaseSecretArn
      
       Events:
         MySQSEvent:
@@ -36,19 +67,85 @@ Resources:
             BatchSize: 10
 
       VpcConfig:
-        SubnetIds: 
-          # private subnet from the RDS VPC (with NAT Gateway because we need to call AWS and external APIs)
-          # https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the
-          - "subnet-0eec570f870efe6c3"
-          - "subnet-04f464473c5ac812c"
-        SecurityGroupIds:
-          - "sg-0655a345b3b79c539" # security group authorized to make inbound connections to RDS cluster 
-        
-  # MeetupMembersFunction:
-  #   Type: AWS::Serverless::Function 
-  #   Properties:
-  #     CodeUri: meetupcrawler/
-  #     Handler: meetup.members
+        # private subnet from the RDS VPC (with NAT Gateway because we need to call AWS and external APIs)
+        # https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the
+        SubnetIds: !Ref SubnetIds
+ 
+        # security group authorized to make inbound connections to RDS cluster
+        SecurityGroupIds: !Ref SecurityGroupId  
+
+      # Messages that can not be precessed will be delivered here for manual analysis
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt ErrorMsgSqsQueue.Arn
+  
+  MeetupCrawlerSchedulerFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/
+      Handler: meetupscheduler.app.lambda_handler
           
   MeetupCodeSqsQueue:
     Type: AWS::SQS::Queue
+    Properties:
+      # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html
+      # Visibility Timeout = 6 x Lambda function timeout as per doc
+      VisibilityTimeout: 180
+      
+  ErrorMsgSqsQueue:
+    Type: AWS::SQS::Queue
+    
+  AlarmTopic: 
+    Type: AWS::SNS::Topic
+    Properties: 
+      Subscription: 
+        - 
+          Endpoint: 
+            !Ref AlarmEmail
+          Protocol: "email"
+            
+  QueueDepthAlarm: 
+    Type: AWS::CloudWatch::Alarm
+    Properties: 
+      AlarmDescription: "Alarm if queue depth increases to more than 10 messages"
+      Namespace: "AWS/SQS"
+      MetricName: "ApproximateNumberOfMessagesVisible"
+      Dimensions: 
+        - 
+          Name: "MeetupDeadLetterQueue"
+          Value: 
+            Fn::GetAtt: 
+              - "ErrorMsgSqsQueue"
+              - "QueueName"
+      Statistic: "Sum"
+      Period: "300"
+      EvaluationPeriods: "1"
+      Threshold: "10"
+      ComparisonOperator: "GreaterThanThreshold"
+      AlarmActions: 
+        - 
+          !Ref AlarmTopic
+      InsufficientDataActions: 
+        - 
+          !Ref AlarmTopic   
+            
+  MeetupgroupDynamoDBTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: 
+        - 
+          AttributeName: "pk"
+          AttributeType: "S"
+        - 
+          AttributeName: "sk"
+          AttributeType: "S"
+
+      KeySchema: 
+        - 
+          AttributeName: "pk"
+          KeyType: "HASH"
+        - 
+          AttributeName: "sk"
+          KeyType: "RANGE"
+
