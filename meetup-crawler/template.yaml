@@ -47,6 +47,8 @@ Globals:
       Variables:
         PYTHON_LOGLEVEL: !Ref CodeLogLevel
         DB_SECRET_NAME: !Ref DatabaseSecretName
+        DYNAMODB_TABLE_NAME: !Ref MeetupGroupDynamoDBTable
+        SQS_QUEUE_NAME: !Ref MeetupCodeSqsQueue
               
 Resources:
   MeetupCrawlerFunction:
@@ -129,7 +131,7 @@ Resources:
         - 
           !Ref AlarmTopic   
             
-  MeetupgroupDynamoDBTable: 
+  MeetupGroupDynamoDBTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
       BillingMode: PAY_PER_REQUEST

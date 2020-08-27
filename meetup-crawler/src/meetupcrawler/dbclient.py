@@ -49,6 +49,7 @@ class DatabaseClient(object):
         except psycopg2.DatabaseError as e:
             self.logger.error(f"Can not execute { sql } statement")
             self.logger.error(e)
+            raise e
         finally:
             if con is not None:
                 con.close()  
@@ -58,18 +59,24 @@ class DatabaseClient(object):
         table_name = 'meetup_group'
         fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category']
         type_association={ 'str' : 'VARCHAR', 'bool' : 'BOOLEAN', 'int' : 'BIGINT', 'float' : 'NUMERIC'}
-            
+
+        # get the list of columns             
         all_fields = [list(group.keys())][0]
         columns = [x for x in all_fields if x not in fields_to_ignore]
+        
+        # for each columns, get the value 
         values = ''
         for c in columns:
             quote = ""
             value = group[c]
+            
+            # insert quotes before and after String    
             if type(value).__name__ == 'str':
                 quote = "'"
                 value = group[c].replace("'", "''")
             values += f' {quote}{value}{quote}, '
     
+        # add the last update and raw json fields 
         columns.append( 'last_updated_at , raw_json')
         json_str = json.dumps(group,ensure_ascii=False).replace("'", "''")
         values += f' { int(time.time()) }, \' { json_str } \' '
@@ -95,6 +102,7 @@ class DatabaseClient(object):
                 additional_columns = [ f + '_' + c for c in [list(event[f].keys())][0] ]
                 columns += additional_columns
 
+        # for each colum, fetch the value 
         values = ''
         for c in columns:
             quote = ""
@@ -107,7 +115,7 @@ class DatabaseClient(object):
                 if fields[0] in event and fields[1] in event[fields[0]]:
                     value = event[ fields[0] ][ fields[1] ]
                 else:
-                    value = 'NULL'
+                    value = 'NULL' # should not happen
                 
             # insert quotes before and after String    
             if type(value).__name__ == 'str':
@@ -116,6 +124,7 @@ class DatabaseClient(object):
                 
             values += f' {quote}{value}{quote}, '
 
+        # add the last update and raw json fields 
         columns.append( 'last_updated_at , raw_json')
         json_str = json.dumps(event,ensure_ascii=False).replace("'", "''")
         values += f' { int(time.time()) }, \' { json_str } \' '
@@ -188,6 +197,7 @@ class DatabaseClient(object):
         except (ClientError, Exception) as e:
             self.logger.error(f"Can not retrieve secret : { self.secret_name }")
             self.logger.error(e)
+            raise e
         return secret 
     
 if __name__ == "__main__":
