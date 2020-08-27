@@ -44,9 +44,11 @@ class MeetupClient(object):
 
         else:
             
-            result = self.client.GetEvents({'group_id' : group['id'],
+            events = self.client.GetEvents({'group_id' : group['id'],
                                             'text_format' : 'plain',
                                             'status':'past'})
+            result = events.results
+            
         return result
 
         

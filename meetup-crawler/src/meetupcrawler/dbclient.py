@@ -6,6 +6,7 @@ import os
 import time
 import json
 import base64
+import string
 import logging
 
 import boto3
@@ -56,7 +57,7 @@ class DatabaseClient(object):
     def insertGroupStmt(self, group):
         
         table_name = 'meetup_group'
-        fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category', 'next_event']
+        fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category', 'next_event', 'pro_network']
         type_association={ 'str' : 'VARCHAR', 'bool' : 'BOOLEAN', 'int' : 'BIGINT', 'float' : 'NUMERIC'}
 
         # get the list of columns             
@@ -72,7 +73,10 @@ class DatabaseClient(object):
             # insert quotes before and after String    
             if type(value).__name__ == 'str':
                 quote = "'"
-                value = group[c].replace("'", "''")
+                temp = group[c].replace("'", "''")
+                # some group description have non printable chars like \x00
+                value = temp.replace("\x00", "")
+
             values += f' {quote}{value}{quote}, '
     
         # add the last update and raw json fields 
@@ -119,7 +123,9 @@ class DatabaseClient(object):
             # insert quotes before and after String    
             if type(value).__name__ == 'str':
                 quote = "'"
-                value = value.replace("'", "''")
+                temp = value.replace("'", "''")
+                # some event description have non printable chars like \x00
+                value = temp.replace("\x00", "")
                 
             values += f' {quote}{value}{quote}, '
 
@@ -129,7 +135,7 @@ class DatabaseClient(object):
         values += f' { int(time.time()) }, \' { json_str } \' '
         #values = values[:-2]
         
-        sql = f'INSERT INTO {event_table_name} ( {", ".join(columns) } ) VALUES ( { values } );'   
+        sql = f'INSERT INTO {event_table_name} ( {", ".join(columns) } ) VALUES ( { values } ) ON CONFLICT (id) DO NOTHING;'   
 
         return sql
 

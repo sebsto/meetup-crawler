@@ -93,6 +93,14 @@ Resources:
             TableName: !Ref MeetupGroupDynamoDBTable
         - DynamoDBWritePolicy:
             TableName: !Ref MeetupGroupDynamoDBTable 
+            
+      Events:
+        MyScheduleEvent:
+          Type: Schedule
+          Properties:
+            Description: "Meetup Crawler Scheduler"
+            Enabled: true
+            Schedule: rate(1 hour)
           
   MeetupCodeSqsQueue:
     Type: AWS::SQS::Queue

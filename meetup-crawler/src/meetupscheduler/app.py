@@ -34,6 +34,7 @@ def lambda_handler(event, context):
     table    = dynamodb.Table(os.environ['DYNAMODB_TABLE_NAME'])
     
     # 1. full table scan to get the list of groups (not efficient but OK for a few hundreds groups)
+    # TODO check FAILED status code first 
     response = table.scan()
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise Exception(f"Can not scan table : { os.environ['DYNAMODB_TABLE_NAME'] }")
