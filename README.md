@@ -184,7 +184,7 @@ cdk boostrap # first time only
 cdk deploy -c env=dev|prod "*"
 ```
 
-Take note of the output (in blue). **These are scattered accross different place, and not just at the end of the cdk command output.** Think about scrolling up a bit to find them.
+Take note of the output (in blue). **These are scattered accross different places, and not just at the end of the cdk command output.** Think about scrolling up a bit to find them.
 
 ```text 
 meetup-infra-dev-vpc.ExportsOutputRefmeetupcrawlervpclambdaSubnet2Subnet6115C64F27ACAA43 = subnet-08da2cf1dde91f6b7
@@ -226,7 +226,7 @@ git clone https://github.com/sebsto/meetup-crawler.git
 cd meetup-crawler/meetup-crawler
 ```
 
-Edit `./script/connectdb.sh` qnd update `AWS_REGION` and `SECRET_ID`.  
+Edit `./script/connectdb.sh` and update `AWS_REGION` and `SECRET_ID`.  
 `SECRET ID` is available from the CDK Stack output above.  In my example:
 
 ```text
