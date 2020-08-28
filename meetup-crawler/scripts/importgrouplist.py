@@ -21,6 +21,7 @@ table = dynamodb.Table('meetup-crawler-dev-MeetupGroupDynamoDBTable-10NSOH0M1W28
 
 with open("./scripts/meetup_group_list.txt") as f: 
     lines = f.readlines() 
+    print(f"Going to import { len(lines) } user groups")
     for line in lines: 
         now = int(time.time())
         item = dict()
@@ -41,3 +42,4 @@ with open("./scripts/meetup_group_list.txt") as f:
                 raise
         else:
             print(item)
+    print(f"Done")

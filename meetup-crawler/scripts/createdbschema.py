@@ -1,8 +1,11 @@
 import json
 import time
 
-import db_connection
 import psycopg2
+
+# do not use, this was created early on to create the data structure and experiment the database code
+# I am keeping it here for documentation purposes
+raise Exception("Outdated script - do not use")
 
 group_table_name = 'meetup_group'
 group_fields_to_ignore=['organizer', 'who', 'group_photo', 'key_photo', 'category', 'meta_category']
