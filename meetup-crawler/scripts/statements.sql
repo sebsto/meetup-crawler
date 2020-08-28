@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS meetup_event (
     last_updated_at BIGINT, raw_json JSON NOT NULL);
 
 
-CREATE VIEW meetup_group_latest AS
+CREATE OR REPLACE VIEW meetup_group_latest AS
     SELECT * 
     FROM meetup_group AS MG
     WHERE last_updated_at = (SELECT max(last_updated_at) FROM meetup_group WHERE MG.id = id);  
