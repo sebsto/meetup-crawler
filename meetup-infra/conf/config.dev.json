@@ -2,8 +2,7 @@
     "description": "Configuration file used for the dev and prod environments. Create a copy named config.dev.json and config.prod.json",
     "environmentType": "dev",
     "env": {
-        "XXXaccount": "486652066693",
-        "region": "eu-west-3"
+        "region": "eu-central-1"
     },
     "vpc": {
         "name": "meetup crawler vpc",
@@ -16,7 +15,7 @@
         "databaseName": "meetupcrawler"
     },
     "custom resource lambda": {
-        "name": "database initialiser function"
+        "name": "meetup crawler database initialiser function"
     }
 
 }

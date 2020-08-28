@@ -1,6 +1,7 @@
 from aws_cdk import (
     aws_rds as rds,
     aws_ec2 as ec2,
+    aws_iam as iam,
     aws_lambda as _lambda,
     custom_resources as cr,
     core)
@@ -49,14 +50,23 @@ class MeetupInfraRdsStack(core.Stack):
             code=_lambda.Code.asset('./custom_resources'),
             handler='app.on_event',
             vpc=config['vpc'],
-            environment={ 'secretArn' : self.get_secret_arn() },
+            environment={ 'DB_SECRET_ARN' : self.get_secret_arn(),
+                          'PYTHON_LOGLEVEL' : 'DEBUG' },
             security_groups=[ self.db_security_group ]
+        )
+        # add permission to access the secret
+        function.add_to_role_policy(iam.PolicyStatement(
+            resources=[ self.get_secret_arn() ],
+            actions=["secretsmanager:GetSecretValue"])
         )
 
         custom_resource_provider = cr.Provider(self, 'Custom Resource Provider',
             on_event_handler=function
         )
-        core.CustomResource(self, 'Custom Resource', service_token=custom_resource_provider.service_token)
+        custom_resource = core.CustomResource(self, 'Custom Resource', service_token=custom_resource_provider.service_token)
+
+        # Tell CFN to wait for the database to be ready before ot create the custom resource
+        custom_resource.node.add_dependency(self.cluster)
 
     def get_database(self):
         return self.cluster
