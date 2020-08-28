@@ -4,13 +4,17 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
 
 [packages]
 setuptools = {editable = true, file = "file:///Users/stormacq/Documents/amazon/code/meetup/meetup-reporting/meetup-infra"}
 "aws-cdk.aws-s3" = "*"
 "aws-cdk.aws-ec2" = "*"
 "aws-cdk.aws-rds" = "*"
+"aws-cdk.custom-resources" = "*"
+"aws-cdk.aws-lambda" = "*"
 boto3 = "*"
+aws-psycopg2 = "*"
 
 [requires]
 python_version = "3.8"

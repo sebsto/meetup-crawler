@@ -14,8 +14,9 @@
         "name": "meetup crawler database",
         "masterUsername": "dbuser",
         "databaseName": "meetupcrawler"
-    }, 
-    "secretManager": {
-        "XXXengine": "postgres"
+    },
+    "custom resource lambda": {
+        "name": "database initialiser function"
     }
+
 }

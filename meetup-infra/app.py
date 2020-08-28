@@ -50,6 +50,20 @@ try:
         config['vpc'] = vpc.get_vpc()
         database = MeetupInfraRdsStack(app, config, f'meetup-infra-{env}-rds', env=cdk_env)
 
+        # not necessary as this is part as the default output for VPC 
+
+        # core.CfnOutput(vpc, "VPC", 
+        #     description="The VPC to host the database and Lambda functions",
+        #     value=vpc.get_vpc().vpc_id
+        # )
+        core.CfnOutput(database, "DBSECURITYGROUPS", 
+            description="The Security group allowing to connect to the database",
+            value=database.get_security_group().security_group_id
+        )
+        core.CfnOutput(database, "DBSECRETNAME", 
+            description="The name of the Secret that contains database connection information",
+            value=database.get_secret_arn()
+        )
 except IOError as error:
     print(f"Can not read {config_file}")
     print(error)

@@ -6,7 +6,7 @@
         "**/__pycache__": true
     },
     "python.venvPath": "/Users/stormacq/.local/share/virtualenvs",
-    "python.pythonPath": "/Users/stormacq/.local/share/virtualenvs/meetup-infra-WjH0Ge4g/bin/python3",
+    "python.pythonPath": "/Users/stormacq/.local/share/virtualenvs/meetup-infra-WjH0Ge4g/bin/python",
     "python.testing.pytestArgs": [
         "-s"
     ],
