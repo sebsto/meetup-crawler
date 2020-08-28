@@ -10,6 +10,7 @@ from aws_cdk import core
 
 from meetup_infra.meetup_infra_vpc_stack import MeetupInfraVpcStack
 from meetup_infra.meetup_infra_rds_stack import MeetupInfraRdsStack
+from meetup_infra.meetup_infra_c9_stack import MeetupInfraCloud9Stack
 
 def prepareBotoConfig(config):
 
@@ -45,10 +46,19 @@ try:
         # https://docs.aws.amazon.com/cdk/latest/guide/environments.html
         cdk_env = core.Environment(region=config['env']['region'])
 
-        # instanciate all our stacks 
+        # instanciate our stacks 
+
+        # first the network 
         vpc = MeetupInfraVpcStack(app, config, f'meetup-infra-{env}-vpc', env=cdk_env)
         config['vpc'] = vpc.get_vpc()
+
+        # second the database
         database = MeetupInfraRdsStack(app, config, f'meetup-infra-{env}-rds', env=cdk_env)
+
+        # in dev environment, create a Cloud9 instance
+        if env == 'dev':
+            config['db_security_group'] = database.get_security_group
+            c9 = MeetupInfraCloud9Stack(app, config, f'meetup-infra-{env}-cloud9', env=cdk_env)
 
         # not necessary as this is part as the default output for VPC 
 
@@ -58,10 +68,12 @@ try:
         # )
         core.CfnOutput(database, "DBSECURITYGROUPS", 
             description="The Security group allowing to connect to the database",
+            export_name="db-security-groups",
             value=database.get_security_group().security_group_id
         )
         core.CfnOutput(database, "DBSECRETNAME", 
             description="The name of the Secret that contains database connection information",
+            export_name="db-secret-name",
             value=database.get_secret_arn()
         )
 except IOError as error:
