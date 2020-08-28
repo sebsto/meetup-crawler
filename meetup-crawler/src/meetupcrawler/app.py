@@ -13,8 +13,8 @@ from meetupcrawler.meetupclient import MeetupClient
 if 'AWS_REGION' not in os.environ:
     raise Exception("AWS_REGION env variable is missing")
 
-if 'DB_SECRET_NAME' not in os.environ:
-    raise Exception("DB_SECRET_NAME env variable is missing")
+if 'DB_SECRET_ARN' not in os.environ:
+    raise Exception("DB_SECRET_ARN env variable is missing")
 
 # Initialize logging with level provided as environment variable
 LOGLEVEL = os.environ.get('PYTHON_LOGLEVEL', 'WARNING').upper()
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
     # prepare the postgres connection
     db = DatabaseClient(
         region_name=os.environ['AWS_REGION'],
-        secret_name=os.environ['DB_SECRET_NAME']
+        secret_name=os.environ['DB_SECRET_ARN']
     )
 
     meetup = MeetupClient()

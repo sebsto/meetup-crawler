@@ -20,7 +20,7 @@ Parameters:
     Type: "List<AWS::EC2::Subnet::Id>"
     
   SecurityGroupId:
-    Default: "sg-0655a345b3b79c539"
+    Default: "sg-04c41b385288f736b"
     Description: "Security Group that has permission to access the database"
     Type: "List<AWS::EC2::SecurityGroup::Id>"    
     
@@ -28,11 +28,6 @@ Parameters:
     Default: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-IotH2oBYYAAG-3CbT5p"
     Description: "Arn of the secret having database connection info"
     Type: "String"      
-    
-  DatabaseSecretName:
-    Default: "meetupcrawlerdatabaseSecret-IotH2oBYYAAG"
-    Description: "Name of the secret having database connection info"
-    Type: "String"  
     
   CodeLogLevel:
     Default: "DEBUG"
@@ -48,7 +43,7 @@ Globals:
     Environment:
       Variables:
         PYTHON_LOGLEVEL: !Ref CodeLogLevel
-        DB_SECRET_NAME: !Ref DatabaseSecretName
+        DB_SECRET_ARN: !Ref DatabaseSecretArn
         DYNAMODB_TABLE_NAME: !Ref MeetupGroupDynamoDBTable
         SQS_QUEUE_NAME: !Ref MeetupCodeSqsQueue
           
@@ -93,6 +88,14 @@ Resources:
             TableName: !Ref MeetupGroupDynamoDBTable
         - DynamoDBWritePolicy:
             TableName: !Ref MeetupGroupDynamoDBTable 
+            
+      Events:
+        MyScheduleEvent:
+          Type: Schedule
+          Properties:
+            Description: "Meetup Crawler Scheduler"
+            Enabled: true
+            Schedule: rate(1 hour)
           
   MeetupCodeSqsQueue:
     Type: AWS::SQS::Queue
