@@ -35,11 +35,11 @@ try:
 
         # when provided on the CLI, overwrite the region param
         region = app.node.try_get_context("region")
-        if region is not None:
+        if region is None:
+            print(f"Using region from conf file (region={config['env']['region']})")
+        else: 
             config['env']['region'] = region
             print(f"Using region from context (-c region={region})")
-        else: 
-            print(f"Using region from conf file (region={config['env']['region']})")
 
         # Create a CDK configuration to use this region 
         # https://docs.aws.amazon.com/cdk/latest/guide/environments.html
