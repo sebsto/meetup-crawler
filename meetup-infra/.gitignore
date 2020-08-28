@@ -5,6 +5,7 @@ __pycache__
 .env
 *.egg-info
 
+
 custom_resources/**psycopg2**
 
 # CDK asset staging directory
