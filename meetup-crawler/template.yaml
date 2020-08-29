@@ -10,22 +10,22 @@ Description: >
 
 Parameters: 
   AlarmEmail: 
-    Default: "stormacq@amazon.com"
+    Default: "<<ALERT_EMAIL>>"
     Description: "Email address to notify of operational issues"
     Type: "String"
     
   SubnetIds:
-    Default: "subnet-0eec570f870efe6c3, subnet-04f464473c5ac812c"
+    Default: "<<SUBNET_IDS>>"
     Description: "Private subnets with route to NAT Gateway to deploy the Lambda function"
     Type: "List<AWS::EC2::Subnet::Id>"
     
   SecurityGroupId:
-    Default: "sg-04c41b385288f736b"
+    Default: "<<SECURITY_GROUP>>"
     Description: "Security Group that has permission to access the database"
     Type: "List<AWS::EC2::SecurityGroup::Id>"    
     
   DatabaseSecretArn:
-    Default: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-IotH2oBYYAAG-3CbT5p"
+    Default: "<<SECRET_ARN>>"
     Description: "Arn of the secret having database connection info"
     Type: "String"      
     
