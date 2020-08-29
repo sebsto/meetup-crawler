@@ -270,17 +270,20 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
     # Assuming your terminal is still in meetup-reporting/meetup-infra directory :
     cd ../meetup-crawler
 
-    LAMBDA_SUBNETS=$(aws cloudformation describe-stacks --region eu-west-3 --stack-name meetup-infra-dev-vpc --query "Stacks[0].Outputs[?contains(ExportName,'vpclambdaSubnet')].OutputValue" --out text | python -c 'import sys; print(sys.stdin.read().replace("\t",","))')
+    # Set the two values below
+    AWS_REGION= # type the region name where you deployed the infrastructure, for example 'eu-west-3'
+    YOUR_EMAIL=notify@me.com # change the email address
+
+    LAMBDA_SUBNETS=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-dev-vpc --query "Stacks[0].Outputs[?contains(ExportName,'vpclambdaSubnet')].OutputValue" --out text | python -c 'import sys; print(sys.stdin.read().replace("\t",","))')
     echo $LAMBDA_SUBNETS
     # shorter version ==> | perl -pe 's/\t\,/g'
 
-    SECURITY_GROUP=$(aws cloudformation describe-stacks --region eu-west-3 --stack-name meetup-infra-dev-rds --query "Stacks[0].Outputs[?ExportName=='db-security-groups'].OutputValue" --out text)
+    SECURITY_GROUP=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-dev-rds --query "Stacks[0].Outputs[?ExportName=='db-security-groups'].OutputValue" --out text)
     echo $SECURITY_GROUP
 
-    SECRET_ARN=$(aws cloudformation describe-stacks --region eu-west-3 --stack-name meetup-infra-dev-rds --query "Stacks[0].Outputs[?ExportName=='db-secret-name'].OutputValue" --out text)
+    SECRET_ARN=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-dev-rds --query "Stacks[0].Outputs[?ExportName=='db-secret-name'].OutputValue" --out text)
     echo $SECRET_ARN
 
-    YOUR_EMAIL=notify@me.com # change the email address
     sed -i .bak -e "s/<<ALERT_EMAIL>>/$YOUR_EMAIL/g" -e "s/<<SUBNET_IDS>>/$LAMBDA_SUBNETS/g" -e "s/<<SECURITY_GROUP>>/$SECURITY_GROUP/g" -e "s/<<SECRET_ARN>>/$SECRET_ARN/g" template.yaml
     ```
 
