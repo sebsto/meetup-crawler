@@ -309,6 +309,19 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
     sam build && sam deploy 
     ```
 
+4. (optional) Create a file with environment variables.
+
+        If you plan to locally modify and test the code, you have to create a virtual environment to run it, and install the code dependencies.
+
+        ```zsh 
+        echo "AWS_REGION=$AWS_REGION" > .env
+        echo "DB_SECRET_NAME=$SECRET_ARN" >> .env
+        echo "PYTHON_LOGLEVEL=debug" >> .env
+        echo "PYTHONPATH=./src" >> .env
+        echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-dev --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME'].OutputValue" --output text)" >> .env
+        echo "DYNAMODB_TABLE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-dev --query "Stacks[0].Outputs[?ExportName=='DYNAMODB-TABLE-NAME'].OutputValue" --output text)" >> .env
+        ```
+    
 5. Import initial list of User Group
 
 ## SQL Statements for Analytics 
