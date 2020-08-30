@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import sys
 import logging
 
 from operator import itemgetter
@@ -24,6 +25,11 @@ if not isinstance(NUMERIC_LOGLEVEL, int):
 logging.basicConfig()
 logger = logging.getLogger(name="MeetupSchedulerLambda")
 logger.setLevel(NUMERIC_LOGLEVEL)
+
+# prepare the dynamodb connexion
+session  = boto3.session.Session()
+dynamodb = session.resource('dynamodb', region_name=os.environ['AWS_REGION'])
+table    = dynamodb.Table(os.environ['DYNAMODB_TABLE_NAME'])        
 
 def initial_table_load(table):
     with open("./meetup_group_list.txt") as f: 
@@ -76,19 +82,22 @@ def send_message(session, group, delay=0):
         raise Exception(f"Can not post message to queue : { response }")  
     return response 
 
+def initial_group_scan(session, groups):
+        logger.info("Triggering initial group scan")
+        for i, group in enumerate(groups,start = 1):
+            logger.info(f"Going to handle #{i} - { group }")
+            # sending message with 10 seconds delays, up to the maximum 900 seconds
+            send_message(session, group, (i * 10) % 900) 
+
 def lambda_handler(event, context):
     logger.info("MeetupCrawler Scheduler Lambda Handler")
     logger.debug(event)
-    
-    # prepare the dynamodb connexion
-    session  = boto3.session.Session()
-    dynamodb = session.resource('dynamodb', region_name=os.environ['AWS_REGION'])
-    table    = dynamodb.Table(os.environ['DYNAMODB_TABLE_NAME'])
     
     # 1. full table scan to get the list of groups (not efficient but OK for a few hundreds groups)
     # TODO check groups with FAILED status code first 
     response = table_scan(table)
     
+    # when there is no data in the table
     if response['Count'] == 0:
         # first run, let's load the table first 
         initial_table_load(table)
@@ -97,11 +106,7 @@ def lambda_handler(event, context):
         response = table_scan(table)
 
         # schedule an initial query for each group 
-        logger.info("Triggering initial load")
-        for i, group in enumerate(response['Items'],start = 1):
-            logger.info(f"Going to handle #{i} - { group }")
-            # sending message with 15 delays, up to the maximum 900 seconds
-            response = send_message(session, group, (i * 15) % 900)
+        initial_group_scan(session, response['Items'])
         
         # Machine is started, the crawler function will now handle all the messages
         return 
@@ -118,8 +123,18 @@ def lambda_handler(event, context):
     logger.info("done")
     # TODO handle and report errors 
     
-
 if __name__ == "__main__":
     logger.info("main")
-    lambda_handler({}, {})
+
+    if len(sys.argv) > 1 and ('--full' in sys.argv):
+        logger.info("Starting a full group scan")
+
+        # read the dynamodb table 
+        response = table_scan(table)
+
+        # schedule an initial query for each group 
+        initial_group_scan(session, response['Items'])        
+
+    else:
+        lambda_handler({}, {})
 
