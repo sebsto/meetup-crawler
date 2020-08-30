@@ -519,7 +519,7 @@ meetupcrawler=> select sum(yes_rsvp_count) from meetup_event where group_urlname
 (1 row)
 ```
 
-last year 
+3. Last year 
 
 ```text
 meetupcrawler=> select sum(yes_rsvp_count) from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - (31556926);
