@@ -319,6 +319,9 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
 
     The scheduler Lambda fuction will automatically populate the DynamoDB table at first run, it will also send one SQS message per group to the crawler function.  To avoid hitting the Meetup.com API rate limit, it spreads the message availability over 15 minutes. So the initial collection of data will happen within 15 minutes after the first execution of the scheduler Lambda function.
 
+    **Important !**
+    Because the Scheduler is first triggered 1h after deployment, the above process starts one hour after the deployment.  To start the process sooner, manually trigger the Scheduler Lambda function from the AWS Console.  
+
 4. (optional) Local code execution
 
     If you plan to locally modify and test the code, you have to create a virtual environment to run it, and install the code dependencies.
