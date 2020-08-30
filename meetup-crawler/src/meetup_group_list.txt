@@ -260,7 +260,6 @@ Amazon-Web-Services-Rome
 AWS-User-Group-Torino
 AWS-User-Group-Venezia
 meetup-group-JsQCXAlY
-AWS-Lebanon
 AWSLuxGroup
 AWS-Malta
 AWS-User-Group-Malta

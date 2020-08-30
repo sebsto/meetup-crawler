@@ -10,22 +10,22 @@ Description: >
 
 Parameters: 
   AlarmEmail: 
-    Default: "<<ALERT_EMAIL>>"
+    Default: "stormacq@amazon.com"
     Description: "Email address to notify of operational issues"
     Type: "String"
     
   SubnetIds:
-    Default: "<<SUBNET_IDS>>"
+    Default: "subnet-08da2cf1dde91f6b7,subnet-0152aef7b05d84741"
     Description: "Private subnets with route to NAT Gateway to deploy the Lambda function"
     Type: "List<AWS::EC2::Subnet::Id>"
     
   SecurityGroupId:
-    Default: "<<SECURITY_GROUP>>"
+    Default: "sg-081e76a970175a030"
     Description: "Security Group that has permission to access the database"
     Type: "List<AWS::EC2::SecurityGroup::Id>"    
     
   DatabaseSecretArn:
-    Default: "<<SECRET_ARN>>"
+    Default: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-FOZiyZaygjzV-f588bT"
     Description: "Arn of the secret having database connection info"
     Type: "String"      
     
@@ -166,3 +166,15 @@ Resources:
           AttributeName: "sk"
           KeyType: "RANGE"
 
+Outputs:
+  DynamoDBTableName:
+    Description: The name of the DynamoDB table
+    Value: !Ref MeetupGroupDynamoDBTable
+    Export:
+      Name: DYNAMODB-TABLE-NAME
+
+  SQSQueueName:
+    Description: The name of the SQS Queue
+    Value: !Ref MeetupCodeSqsQueue
+    Export:
+      Name: SQS-QUEUE-NAME      

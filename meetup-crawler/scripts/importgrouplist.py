@@ -5,6 +5,11 @@ import time
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 
+# do not use, this was created early on to create the data structure and experiment the database code
+# I am keeping it here for documentation purposes
+# this code is now included in the Meetup Scheduler function
+raise Exception("Outdated script - do not use")
+
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -19,7 +24,7 @@ session = boto3.session.Session()
 dynamodb = session.resource('dynamodb', region_name='eu-west-3')
 table = dynamodb.Table('meetup-crawler-dev-MeetupGroupDynamoDBTable-10NSOH0M1W28L')
 
-with open("./scripts/meetup_group_list.txt") as f: 
+with open("./src/meetup_group_list.txt") as f: 
     lines = f.readlines() 
     print(f"Going to import { len(lines) } user groups")
     for line in lines: 
