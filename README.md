@@ -321,16 +321,16 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
 
 4. (optional) Create a file with environment variables.
 
-        If you plan to locally modify and test the code, you have to create a virtual environment to run it, and install the code dependencies.
+    If you plan to locally modify and test the code, you have to create a virtual environment to run it, and install the code dependencies.
 
-        ```zsh 
-        echo "AWS_REGION=$AWS_REGION" > .env
-        echo "DB_SECRET_NAME=$SECRET_ARN" >> .env
-        echo "PYTHON_LOGLEVEL=debug" >> .env
-        echo "PYTHONPATH=./src" >> .env
-        echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME-$ENV'].OutputValue" --output text)" >> .env
-        echo "DYNAMODB_TABLE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='DYNAMODB-TABLE-NAME-$ENV'].OutputValue" --output text)" >> .env
-        ```
+    ```zsh 
+    echo "AWS_REGION=$AWS_REGION" > .env
+    echo "DB_SECRET_NAME=$SECRET_ARN" >> .env
+    echo "PYTHON_LOGLEVEL=debug" >> .env
+    echo "PYTHONPATH=./src" >> .env
+    echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME-$ENV'].OutputValue" --output text)" >> .env
+    echo "DYNAMODB_TABLE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='DYNAMODB-TABLE-NAME-$ENV'].OutputValue" --output text)" >> .env
+    ```
     
 ## SQL Statements for Analytics 
 
