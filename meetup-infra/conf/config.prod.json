@@ -1,13 +1,13 @@
 {
     "description": "Configuration file used for the dev and prod environments. Create a copy named config.dev.json and config.prod.json",
-    "environmentType": "dev",
+    "environmentType": "prod",
     "env": {
         "region": "eu-west-3"
     },
     "vpc": {
         "name": "meetup crawler vpc",
-        "maxAzs": 1,
-        "natGateways": 1
+        "maxAzs": 3,
+        "natGateways": 3
     },
     "rds": {
         "name": "meetup crawler database",

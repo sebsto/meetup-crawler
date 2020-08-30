@@ -68,12 +68,12 @@ try:
         # )
         core.CfnOutput(database, "DBSECURITYGROUPS", 
             description="The Security group allowing to connect to the database",
-            export_name="db-security-groups",
+            export_name=f"db-security-groups-{env}",
             value=database.get_security_group().security_group_id
         )
         core.CfnOutput(database, "DBSECRETNAME", 
             description="The name of the Secret that contains database connection information",
-            export_name="db-secret-name",
+            export_name=f"db-secret-name-{env}",
             value=database.get_secret_arn()
         )
 except IOError as error:
