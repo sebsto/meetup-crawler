@@ -9,31 +9,39 @@ Description: >
   Crawls Meetup.com API to retrieve groups data and event details
 
 Parameters: 
+  Env:
+    Default: "dev"
+    Description: "The name of the environment"
+    Type: String
+    AllowedValues: 
+      - "prod"
+      - "dev"
+
   AlarmEmail: 
-    Default: "stormacq@amazon.com"
+    Default: "<<ALERT_EMAIL>>"
     Description: "Email address to notify of operational issues"
     Type: "String"
     
   SubnetIds:
-    Default: "subnet-08da2cf1dde91f6b7,subnet-0152aef7b05d84741"
+    Default: "<<SUBNET_IDS>>"
     Description: "Private subnets with route to NAT Gateway to deploy the Lambda function"
     Type: "List<AWS::EC2::Subnet::Id>"
     
   SecurityGroupId:
-    Default: "sg-081e76a970175a030"
+    Default: "<<SECURITY_GROUP>>"
     Description: "Security Group that has permission to access the database"
     Type: "List<AWS::EC2::SecurityGroup::Id>"    
     
   DatabaseSecretArn:
-    Default: "arn:aws:secretsmanager:eu-west-3:486652066693:secret:meetupcrawlerdatabaseSecret-FOZiyZaygjzV-f588bT"
+    Default: "<<SECRET_ARN>>"
     Description: "Arn of the secret having database connection info"
-    Type: "String"      
-    
+    Type: "String"  
+
   CodeLogLevel:
     Default: "DEBUG"
     Description: "Log Level, see https://docs.python.org/3/library/logging.html#levels"
-    Type: "String"    
-      
+    Type: "String"  
+
 Globals:
   Function:
     Runtime: python3.8
@@ -171,10 +179,10 @@ Outputs:
     Description: The name of the DynamoDB table
     Value: !Ref MeetupGroupDynamoDBTable
     Export:
-      Name: DYNAMODB-TABLE-NAME
+      Name: !Sub DYNAMODB-TABLE-NAME-${Env}
 
   SQSQueueName:
     Description: The name of the SQS Queue
     Value: !Ref MeetupCodeSqsQueue
     Export:
-      Name: SQS-QUEUE-NAME      
+      Name: !Sub SQS-QUEUE-NAME-${Env}
