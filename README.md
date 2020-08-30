@@ -319,7 +319,7 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
 
     The scheduler Lambda fuction will automatically populate the DynamoDB table at first run, it will also send one SQS message per group to the crawler function.  To avoid hitting the Meetup.com API rate limit, it spreads the message availability over 15 minutes. So the initial collection of data will happen within 15 minutes after the first execution of the scheduler Lambda function.
 
-4. (optional) Create a file with environment variables.
+4. (optional) Local code execution
 
     If you plan to locally modify and test the code, you have to create a virtual environment to run it, and install the code dependencies.
 
@@ -331,7 +331,38 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
     echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME-$ENV'].OutputValue" --output text)" >> .env
     echo "DYNAMODB_TABLE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='DYNAMODB-TABLE-NAME-$ENV'].OutputValue" --output text)" >> .env
     ```
-    
+
+    You can start the scheduler locally using 
+
+    ```zsh 
+    python -m meetupscheduler.app
+    ````
+
+    You can start the crawler locally by 
+
+    1. Setting the group URL Name you want crawl in `events/event.json`
+    2. Launching the code in your virtual environment with:
+        ```zsh
+        python -m meetupcrawler.app
+        ```
+
+## Logging 
+
+When executing the code locally, the logs are sent to `stdout`.
+
+When executing in a Lambda function, the logs are sent to AWS CloudWatch Logs.  You can use `sam`to tail the logs locally :
+
+```zsh
+AWS_REGION=eu-west-3
+ENV=dev # or prod 
+
+# Crawler logs 
+sam logs --region $AWS_REGION --name MeetupCrawlerFunction --stack-name meetup-crawler-$ENV --tail
+
+# Scheduler logs 
+sam logs --region $AWS_REGION --name MeetupCrawlerSchedulerFunction --stack-name meetup-crawler-$ENV --tail
+```
+
 ## SQL Statements for Analytics 
 
 Here are the requirements to connect to the database, you must have:
