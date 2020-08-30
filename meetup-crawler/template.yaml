@@ -46,7 +46,7 @@ Globals:
   Function:
     Runtime: python3.8
     CodeUri: src/
-    Timeout: 30
+    Timeout: 120
     
     Environment:
       Variables:
