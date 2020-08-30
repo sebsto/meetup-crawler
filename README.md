@@ -274,14 +274,16 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
     AWS_REGION= # type the region name where you deployed the infrastructure, for example 'eu-west-3'
     YOUR_EMAIL=notify@me.com # change the email address
 
-    LAMBDA_SUBNETS=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-dev-vpc --query "Stacks[0].Outputs[?contains(ExportName,'vpclambdaSubnet')].OutputValue" --out text | python -c 'import sys; print(sys.stdin.read().replace("\t",","))')
+    ENV=dev # or prod 
+
+    LAMBDA_SUBNETS=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-$ENV-vpc --query "Stacks[0].Outputs[?contains(ExportName,'vpclambdaSubnet')].OutputValue" --out text | python -c 'import sys; print(sys.stdin.read().replace("\t",","))')
     echo $LAMBDA_SUBNETS
     # shorter version ==> | perl -pe 's/\t\,/g'
 
-    SECURITY_GROUP=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-dev-rds --query "Stacks[0].Outputs[?ExportName=='db-security-groups'].OutputValue" --out text)
+    SECURITY_GROUP=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-$ENV-rds --query "Stacks[0].Outputs[?ExportName=='db-security-groups-$ENV'].OutputValue" --out text)
     echo $SECURITY_GROUP
 
-    SECRET_ARN=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-dev-rds --query "Stacks[0].Outputs[?ExportName=='db-secret-name'].OutputValue" --out text)
+    SECRET_ARN=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-$ENV-rds --query "Stacks[0].Outputs[?ExportName=='db-secret-name-$ENV'].OutputValue" --out text)
     echo $SECRET_ARN
 
     sed -i .bak -e "s/<<ALERT_EMAIL>>/$YOUR_EMAIL/g" -e "s/<<SUBNET_IDS>>/$LAMBDA_SUBNETS/g" -e "s/<<SECURITY_GROUP>>/$SECURITY_GROUP/g" -e "s/<<SECRET_ARN>>/$SECRET_ARN/g" template.yaml
@@ -306,8 +308,16 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
     sam build && sam deploy --guided 
 
     # for subsequent deployments 
-    sam build && sam deploy 
+    sam build && sam deploy --stack-name meetup-crawler-dev
     ```
+
+    For production deployments :
+
+    ```zsh
+    sam build && sam deploy --stack-name meetup-crawler-prod --parameter-overrides Env=prod
+    ```
+
+    The scheduler Lambda fuction will automatically populate the DynamoDB table at first run, it will also send one SQS message per group to the crawler function.  To avoid hitting the Meetup.com API rate limit, it spreads the message availability over 15 minutes. So the initial collection of data will happen within 15 minutes after the first execution of the scheduler Lambda function.
 
 4. (optional) Create a file with environment variables.
 
@@ -318,25 +328,74 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
         echo "DB_SECRET_NAME=$SECRET_ARN" >> .env
         echo "PYTHON_LOGLEVEL=debug" >> .env
         echo "PYTHONPATH=./src" >> .env
-        echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-dev --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME'].OutputValue" --output text)" >> .env
-        echo "DYNAMODB_TABLE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-dev --query "Stacks[0].Outputs[?ExportName=='DYNAMODB-TABLE-NAME'].OutputValue" --output text)" >> .env
+        echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME-$ENV'].OutputValue" --output text)" >> .env
+        echo "DYNAMODB_TABLE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='DYNAMODB-TABLE-NAME-$ENV'].OutputValue" --output text)" >> .env
         ```
     
-5. Import initial list of User Group
-
 ## SQL Statements for Analytics 
+
+Here are the requirements to connect to the database, you must have:
+
+- Secret Manager permission (`secretsmanager:GetSecretValue`) to read the database connection details (`$DB_SCRET_NAME`)
+- a database client deployed to or having network access the database VPC
+- the database client must be part of the DB Client Security Group (`$SECURITY_GROUP`)
 
 Here are a couple of SQL statements that can be used for analytics.
 
 ### How many groups ?
 
+```text
+meetupcrawler=> select count(*) from meetup_group_latest;
+ count 
+-------
+   357
+(1 row)
+````
+
 ### How many members has that group ?
+
+```text
+meetupcrawler=> select urlname, name, members from meetup_group_latest where urlname = 'French-AWS-UG';
+    urlname    |         name         | members 
+---------------+----------------------+---------
+ French-AWS-UG | Paris AWS User Group |    3616
+(1 row)
+```
 
 ### What is the evolution of this group ?
 
+```text
+meetupcrawler=> select urlname, name, members, to_timestamp(last_updated_at) as when from meetup_group  where urlname = 'French-AWS-UG';                                                        
+    urlname    |         name         | members |          when          
+---------------+----------------------+---------+------------------------
+ French-AWS-UG | Paris AWS User Group |    3616 | 2020-08-30 12:50:21+00
+(1 row)
+````
+
+Mutiple lines will appear over time.
+
 ### How many events this group organised ?
 
-ever
+1. All events ever organised 
+
+```text
+meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup_event where group_urlname = 'French-AWS-UG' order by time;                                                     
+                                       name                                       |      to_timestamp      | yes_rsvp_count 
+----------------------------------------------------------------------------------+------------------------+----------------
+ Tenue du Meetup #1 du French AWS User Group le 26 juin                           | 2014-06-26 17:00:00+00 |             22
+ Retour de Re:Invent                                                              | 2014-12-08 18:00:00+00 |             44
+ 3ème #MeetupAWS                                                                  | 2015-02-25 18:00:00+00 |             20
+ 4ème #MeetupAWS                                                                  | 2015-03-27 18:00:00+00 |             32
+ Meetup #5 AWSFR le Mercredi 6 Mai chez NEOXIA                                    | 2015-05-06 17:00:00+00 |             32
+ 6ème #MeetupAWS                                                                  | 2015-06-10 16:30:00+00 |             33
+ ...
+ Meetup virtuel AWS #1 - AWS dans l'univers du Gaming                             | 2020-03-25 17:50:00+00 |            236
+ Meetup virtuel AWS #2 - L'orchestration Kubernetes sur AWS                       | 2020-04-23 16:50:00+00 |            321
+ Meetup virtuel AWS #3 - Migration et transformation d'une app                    | 2020-05-07 16:00:00+00 |            146
+ Meetup virtuel AWS #4 - La sécurité dans le cloud AWS                            | 2020-05-27 17:00:00+00 |            187
+ AWS Virtual Meetup #5 - Chaos engineering                                        | 2020-07-01 17:00:00+00 |            161
+(49 rows)
+```
 last month 
 last year 
 
