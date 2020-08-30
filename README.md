@@ -404,9 +404,35 @@ meetupcrawler=> select urlname, name, members, to_timestamp(last_updated_at) as 
 ---------------+----------------------+---------+------------------------
  French-AWS-UG | Paris AWS User Group |    3616 | 2020-08-30 12:50:21+00
 (1 row)
-````
+```
 
 Mutiple lines will appear over time.
+
+### How many groups are there in this country ?
+
+```text
+meetupcrawler=> select urlname, name, members, to_timestamp(last_updated_at) as when from meetup_group  where country = 'FR';
+                 urlname                  |                    name                    | members |          when          
+------------------------------------------+--------------------------------------------+---------+------------------------
+ Bordeaux-Amazon-Web-Services             | Bordeaux AWS User Group                    |     691 | 2020-08-30 12:49:48+00
+ AWS-User-Group-Strasbourg                | Strasbourg AWS User Group                  |     241 | 2020-08-30 12:49:58+00
+ French-AWS-UG                            | Paris AWS User Group                       |    3616 | 2020-08-30 12:50:21+00
+ Poitiers-AWS-User-Group                  | Poitiers AWS User Group                    |      22 | 2020-08-30 12:51:26+00
+ Montpellier-Amazon-Web-Services          | Montpellier Amazon Web Services            |     544 | 2020-08-30 12:51:44+00
+ Grenoble-AWS-User-Group                  | Grenoble AWS User Group                    |     144 | 2020-08-30 12:54:02+00
+ Toulouse-Amazon-Web-Services             | Toulouse AWS User Group                    |    1092 | 2020-08-30 12:55:02+00
+ Marseille-AWS-User-Group                 | Marseille AWS User Group                   |     154 | 2020-08-30 12:55:43+00
+ Pau-AWS-User-Group                       | Pau AWS User Group                         |      82 | 2020-08-30 12:55:47+00
+ Rennes-Amazon-Web-Services-User-Group    | Rennes Amazon Web Services User Group      |     381 | 2020-08-30 12:59:57+00
+ Lille-AWS-Amazon-Web-Services-User-Group | Lille AWS (Amazon Web Services) User Group |     673 | 2020-08-30 12:58:28+00
+ AWS-Nantes                               | AWS Nantes                                 |     743 | 2020-08-30 12:59:20+00
+ AWS-Lyon-Amazon-Web-Services-User-Group  | Lyon AWS User Group - LAWS                 |     685 | 2020-08-30 13:00:25+00
+ AWS-cote-dAzur                           | AWS Côte d'Azur                            |     384 | 2020-08-30 13:04:14+00
+ AWS-User-Group-Niort                     | Niort AWS User Group                       |      77 | 2020-08-30 13:04:14+00
+ Bordeaux-Amazon-Web-Services             | Bordeaux AWS User Group                    |     691 | 2020-08-30 15:03:37+00
+ AWS-User-Group-Strasbourg                | Strasbourg AWS User Group                  |     241 | 2020-08-30 20:03:38+00
+(17 rows)
+```
 
 ### How many events this group organised ?
 
@@ -430,18 +456,75 @@ meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup
  AWS Virtual Meetup #5 - Chaos engineering                                        | 2020-07-01 17:00:00+00 |            161
 (49 rows)
 ```
-last month 
-last year 
+
+2. Last month 
+
+```text
+select name, to_timestamp(time/1000), yes_rsvp_count
+from meetup_event
+where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - 2629743
+order by time;
+```
+
+(2629743 is 1 month for epoch). For multiple months, just multiply this number by the number of months.
+
+```text
+meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - (3*2629743) order by time;
+                   name                    |      to_timestamp      | yes_rsvp_count 
+-------------------------------------------+------------------------+----------------
+ AWS Virtual Meetup #5 - Chaos engineering | 2020-07-01 17:00:00+00 |            161
+(1 row)
+```
+
+3. Last year 
+
+```text
+meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - 31556926  order by time;
+                                       name                                       |      to_timestamp      | yes_rsvp_count 
+----------------------------------------------------------------------------------+------------------------+----------------
+ Use Machine Learning to personalise customer content & to make business forecast | 2019-09-03 16:45:00+00 |             66
+ Meetup AWS #38                                                                   | 2019-11-12 17:45:00+00 |             90
+ Meetup AWS #39 - re:Invent 2019 re:Cap                                           | 2019-12-18 18:00:00+00 |            249
+ Meetup AWS #40 - Serverless                                                      | 2020-01-30 17:45:00+00 |             70
+ Meetup AWS #41 - Container on AWS                                                | 2020-02-17 17:45:00+00 |            140
+ Meetup virtuel AWS #1 - AWS dans l'univers du Gaming                             | 2020-03-25 17:50:00+00 |            236
+ Meetup virtuel AWS #2 - L'orchestration Kubernetes sur AWS                       | 2020-04-23 16:50:00+00 |            321
+ Meetup virtuel AWS #3 - Migration et transformation d'une app                    | 2020-05-07 16:00:00+00 |            146
+ Meetup virtuel AWS #4 - La sécurité dans le cloud AWS                            | 2020-05-27 17:00:00+00 |            187
+ AWS Virtual Meetup #5 - Chaos engineering                                        | 2020-07-01 17:00:00+00 |            161
+(10 rows)
+```
 
 ### How many rsvp had this group's events ?
 
-ever 
-last month 
+1. for all events ever organised by this group
+
+```text
+meetupcrawler=> select sum(yes_rsvp_count) from meetup_event where group_urlname = 'French-AWS-UG';
+ sum  
+------
+ 4475
+(1 row)
+```
+
+2. Last month 
+
+The below example is for 3 months
+
+```text
+meetupcrawler=> select sum(yes_rsvp_count) from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - (3*2629743);
+ sum 
+-----
+ 161
+(1 row)
+```
+
 last year 
 
-### How many groups are there in this country ?
-
-
-
-
-
+```text
+meetupcrawler=> select sum(yes_rsvp_count) from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - (31556926);
+ sum  
+------
+ 1666
+(1 row)
+```
