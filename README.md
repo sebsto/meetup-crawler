@@ -1,10 +1,26 @@
 # Meetup Crawler 
 
-This is the code for the Meetup Crawler Project. The goal of the project is to collect AWS User's Group data from meetup.com for analytics purposes.  Data collected are the ones available through the public API of meetup.com, it includes data such as the number of members, the number of events organised, the number of rsvp per event etc.
+This is a Meetup Data Crawler. The goal of the project is to collect AWS User's Group data from meetup.com for analytics purposes.  Data collected are the ones available through the public API of meetup.com, it includes data such as the number of members, the number of events organised, the number of rsvp per event etc.
+
+--- 
+
+**WARNING** 
+
+Using Meetup's API and Data is subject to Meetup.com [License Agreement](https://help.meetup.com/hc/en-us/articles/360028705532-Meetup-API-license-terms). Please be sure you read and understand this license agreement before to use the code found here.
+
+---
+
+The two main pieces of code are a Scheduler and a Crawler.  Both are implemented as AWS Lambda functions.  The scheduler triggers at regular time interval and selects the User Group(s) data to crawl. The Scheduler posts a message containing the reference(s) to the meetup group(s) to refresh over SQS.  When the crawler receives a message, it queries Meetup.com APIs and store the data in a relational database for downstream analytics.
 
 Project architecture is illustrated below.
 
 ![architecture](./docs/architecture.png)
+
+There are two main deployment units in this project :
+
+- `meetup-infra`is a CDK template that creates the infrastructure required by the Scheduler and the Crawler : a VPC network and the relational database (Aurora PostgreSQL)
+
+- `meetup-crawler`is a SAM project that contains both the Meetup Scheduler and Meetup Crawler Lambda functions. It also creates some resources used by these : the SQS queues, the DynamoDB data control table and some Cloudwatch Alarms.
 
 ## Requirements
 
