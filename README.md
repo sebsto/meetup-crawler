@@ -544,3 +544,7 @@ meetupcrawler=> select sum(yes_rsvp_count) from meetup_event where group_urlname
  1666
 (1 row)
 ```
+
+# Questions, sugestions, and new content?
+
+[![follow-social](https://img.shields.io/twitter/follow/sebsto?style=social)](https://twitter.com/sebsto) <br/>
