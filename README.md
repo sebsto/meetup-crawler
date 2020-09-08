@@ -173,14 +173,21 @@ cd meetup-crawler
     pipenv --python 3.8
     ```
 
-2. Install dependencies for meetup-infra
+2. Install CDK dependencies for meetup-infra
 
     ```zsh 
     pipenv install # or pipenv install --skip-lock  
     pipenv shell 
     ```
 
-3. Define the AWS Region where you want to deploy
+3. Add dependencies for the AWS Lambda Custom Resources 
+
+    ```zsh
+    cd custom_resources 
+    pip install -r requirements.txt --target .
+    ```
+
+4. Define the AWS Region where you want to deploy
 
     Open `conf/config.dev.json` and update the following, as appropriate:
 
@@ -190,7 +197,7 @@ cd meetup-crawler
         }
     ```
 
-4. Deploy the infra 
+5. Deploy the infra 
 
     ```zsh
     # verify everything works well first 

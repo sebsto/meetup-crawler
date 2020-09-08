@@ -1,2 +1,2 @@
-boto3
+# boto3 # let's use the version bundled with Lambda
 aws-psycopg2
