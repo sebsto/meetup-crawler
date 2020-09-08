@@ -185,6 +185,7 @@ cd meetup-crawler
     ```zsh
     cd custom_resources 
     pip install -r requirements.txt --target .
+    cd ..
     ```
 
 4. Define the AWS Region where you want to deploy
