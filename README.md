@@ -435,7 +435,7 @@ Mutiple lines will appear over time.
 ### How many groups are there in this country ?
 
 ```text
-meetupcrawler=> select urlname, name, members, to_timestamp(last_updated_at) as when from meetup_group  where country = 'FR';
+meetupcrawler=> select urlname, name, members, to_timestamp(last_updated_at) as when from meetup_group_latest  where country = 'FR';
                  urlname                  |                    name                    | members |          when          
 ------------------------------------------+--------------------------------------------+---------+------------------------
  Bordeaux-Amazon-Web-Services             | Bordeaux AWS User Group                    |     691 | 2020-08-30 12:49:48+00
@@ -503,7 +503,7 @@ meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup
 3. Last year 
 
 ```text
-meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - 31556926  order by time;
+meetupcrawler=> select name, to_timestamp(time/1000), yes_rsvp_count from meetup_event where group_urlname = 'French-AWS-UG' and time/1000 >= extract(epoch from now()) - (12 * 2629743)  order by time;
                                        name                                       |      to_timestamp      | yes_rsvp_count 
 ----------------------------------------------------------------------------------+------------------------+----------------
  Use Machine Learning to personalise customer content & to make business forecast | 2019-09-03 16:45:00+00 |             66
