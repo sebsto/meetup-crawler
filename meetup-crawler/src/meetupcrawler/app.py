@@ -94,9 +94,12 @@ def lambda_handler(event, context):
                     # Second get details about their events
                     events = meetup.events(group_info, g['start'])
                     #logger.debug(events)
-                    
+
+                    logger.debug(f"Count event : { len(events) }")
+
                     for e in events:
-                        logger.info(f"Handling event: { e['name'] }")
+                        event_time = time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(e['time']/1000))
+                        logger.info(f"Handling event: { e['name'] }, { event_time }")
                         logger.debug(e)
                         sql = db.insertEventsStmt(e)
                         #logger.debug(sql)
@@ -106,7 +109,6 @@ def lambda_handler(event, context):
                     status = "SUCCEED"
                     item['status'] = status 
                     update_item(table, item)
-
     
                 except:
                         
