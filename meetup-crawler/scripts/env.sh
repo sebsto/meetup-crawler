@@ -14,6 +14,7 @@
     
     echo "AWS_REGION=$AWS_REGION" > .env
     echo "DB_SECRET_ARN=$SECRET_ARN" >> .env
+    echo "ENV=$ENV" >> .env
     echo "PYTHON_LOGLEVEL=debug" >> .env
     echo "PYTHONPATH=./src" >> .env
     echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME-$ENV'].OutputValue" --output text)" >> .env
