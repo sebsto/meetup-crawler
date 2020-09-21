@@ -284,7 +284,7 @@ meetupcrawler=> \dv
 
 ### Meetup Scheduler and Meetup Crawler 
 
-Before deploying the meetup scheuler and meetup crawlers lambda functions, you have to collect some IDs of the resources just created.
+Before deploying the meetup scheduler and meetup crawlers lambda functions, you have to collect some IDs of the resources just created.
 
 1. Prepare the SAM Template 
 
@@ -352,7 +352,7 @@ Before deploying the meetup scheuler and meetup crawlers lambda functions, you h
 
     ```zsh 
     echo "AWS_REGION=$AWS_REGION" > .env
-    echo "DB_SECRET_NAME=$SECRET_ARN" >> .env
+    echo "DB_SECRET_ARN=$SECRET_ARN" >> .env
     echo "PYTHON_LOGLEVEL=debug" >> .env
     echo "PYTHONPATH=./src" >> .env
     echo "SQS_QUEUE_NAME=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-crawler-$ENV --query "Stacks[0].Outputs[?ExportName=='SQS-QUEUE-NAME-$ENV'].OutputValue" --output text)" >> .env
