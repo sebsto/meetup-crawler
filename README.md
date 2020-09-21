@@ -352,6 +352,7 @@ Before deploying the meetup scheduler and meetup crawlers lambda functions, you 
 
     ```zsh 
     echo "AWS_REGION=$AWS_REGION" > .env
+    SECRET_ARN=$(aws cloudformation describe-stacks --region $AWS_REGION --stack-name meetup-infra-$ENV-rds --query "Stacks[0].Outputs[?ExportName=='db-secret-name-$ENV'].OutputValue" --out text)
     echo "DB_SECRET_ARN=$SECRET_ARN" >> .env
     echo "PYTHON_LOGLEVEL=debug" >> .env
     echo "PYTHONPATH=./src" >> .env
