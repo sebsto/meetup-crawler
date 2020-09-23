@@ -36,7 +36,7 @@ with open("./meetup_group_list.txt") as f:
         item['pk'] = line[:-1] # removing trailing \n
         item['sk'] = "GROUP"
         item['created_at'] = now
-        item['last_updated_at'] = 0
+        item['last_updated_at'] = 0 
         try:
             # Update database
             update = table.put_item(

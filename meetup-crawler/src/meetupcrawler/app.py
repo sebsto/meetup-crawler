@@ -30,7 +30,7 @@ def get_item(table, group_name):
     item_result = table.get_item(
         Key= {
             'pk' : group_name,
-            'sk' : 'NOT_USED'
+            'sk' : 'GROUP'
         }
     )
     if item_result['ResponseMetadata']['HTTPStatusCode'] != 200:
