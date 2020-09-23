@@ -10,12 +10,11 @@ import boto3
 from botocore.exceptions import ClientError
 
 # verify pre-reqs env variables
-if 'AWS_REGION' not in os.environ:
-    raise Exception("AWS_REGION env variable is missing")
+required_env_variables = ['DYNAMODB_TABLE_NAME', 'AWS_REGION', 'SQS_QUEUE_NAME']
+for e in required_env_variables:
+    if e not in os.environ:
+        raise Exception(f"{e} env variable is missing")
 
-if 'SQS_QUEUE_NAME' not in os.environ:
-    raise Exception("SQS_QUEUE_NAME env variable is missing")
-    
 # Initialize logging with level provided as environment variable
 LOGLEVEL = os.environ.get('PYTHON_LOGLEVEL', 'WARNING').upper()
 NUMERIC_LOGLEVEL = getattr(logging, LOGLEVEL, None)
@@ -39,7 +38,7 @@ def initial_table_load(table):
             now = int(time.time())
             item = dict()
             item['pk'] = line[:-1] # removing trailing \n
-            item['sk'] = "NOT_USED"
+            item['sk'] = "GROUP"
             item['created_at'] = now
             item['last_updated_at'] = now
             try:
