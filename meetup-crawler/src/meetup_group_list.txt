@@ -355,3 +355,7 @@ Cape-Town-AWS
 AWS-JOZI
 AWS-PTA
 AWS-Dubai
+AWS-User-Group-Armenia
+AWSUG-PH-Pampanga-Northern-Luzon
+AWS-Usergroup-PH-Women
+AWS-User-Group-Catania
